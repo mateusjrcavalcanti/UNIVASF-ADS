@@ -1,0 +1,19 @@
+{
+  "name": "ads",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "tailwindcss -i ./css/input.css -o ./css/output.css --watch",
+    "start": "node src/index.js",
+    "op": "node src/op.js",
+    "ov": "node src/ov.js",
+    "st": "node src/st.js"
+  },
+  "keywords": [],
+  "author": "mateusjrcavalcanti",
+  "license": "MIT",
+  "dependencies": {
+    "mathjs": "^12.4.1"
+  }
+}
