@@ -1,3 +1,4 @@
+const os = require("os");
 const fs = require("fs").promises;
 const path = require("path");
 
@@ -179,25 +180,54 @@ async function statistics(
   );
 }
 
-async function main() {
-  // await clearDir(outDir);
+async function printSystemInfo(outputFile) {
+  const systemInfo = {
+    Platform: os.platform(),
+    Architecture: os.arch(),
+    "CPU Model": os.cpus()[0].model,
+    "Number of CPUs": os.cpus().length,
+    "Total Memory (GB)": (os.totalmem() / 1024 / 1024 / 1024).toFixed(2),
+    "Free Memory (GB)": (os.freemem() / 1024 / 1024 / 1024).toFixed(2),
+    "System Uptime (hours)": (os.uptime() / 3600).toFixed(2),
+  };
 
-  // await measureExecutionTime(
-  //   performOperation,
-  //   NUMBER_OF_ITERATIONS,
-  //   "operation_results.txt"
-  // );
-  // await measureExecutionTime(
-  //   performOverhead,
-  //   NUMBER_OF_ITERATIONS,
-  //   "overhead_results.txt"
-  // );
+  const infoString = Object.entries(systemInfo)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join("\n");
+
+  try {
+    await fs.writeFile(outputFile, infoString);
+    console.log(`As informações do sistema foram gravadas em ${outputFile}`);
+  } catch (error) {
+    console.error(
+      `Erro ao gravar informações do sistema em ${outputFile}:`,
+      error
+    );
+  }
+}
+
+async function main() {
+  await clearDir(outDir);
+
+  await measureExecutionTime(
+    performOverhead,
+    NUMBER_OF_ITERATIONS,
+    "overhead_results.txt"
+  );
+
+  await measureExecutionTime(
+    performOperation,
+    NUMBER_OF_ITERATIONS,
+    "operation_results.txt"
+  );
 
   await statistics(
     "operation_results.txt",
     "overhead_results.txt",
     "statistics.txt"
   );
+
+  await printSystemInfo(path.join(outDir, "system_info.txt"));
 }
 
 main().catch(console.error);
